@@ -6,6 +6,56 @@
 
 using namespace std;
 
+#include <chrono>
+
+///////////////////////////////////////////////
+// Profiling //////////////////////////////////
+///////////////////////////////////////////////
+
+class Timer
+{
+public:
+	Timer(const char* name)
+		: m_Name(name), m_Stopped(false)
+	{
+		m_StartTimepoint = std::chrono::high_resolution_clock::now();
+	}
+
+	~Timer()
+	{
+		if (!m_Stopped)
+			Stop();
+	}
+
+	void Stop()
+	{
+		auto endTimepoint = std::chrono::high_resolution_clock::now();
+
+		long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
+		long long end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
+
+		m_Stopped = false;
+
+		float duration = (end - start) * 0.001f;
+
+		cout << "-------------------------------------------------------------------------\n";
+		cout << "Timer {" << m_Name << "}: " << duration << "ms" << "\n";
+		cout << "-------------------------------------------------------------------------\n";
+
+	}
+
+private:
+	const char* m_Name;
+	std::chrono::time_point<std::chrono::steady_clock> m_StartTimepoint;
+	bool m_Stopped;
+};
+
+#define PROFILE_SCOPE(name) Timer timer##__LINE__(name)
+
+///////////////////////////////////////////////
+// Profiling End //////////////////////////////
+///////////////////////////////////////////////
+
 // Helper struct
 struct Vec2
 {
@@ -67,14 +117,13 @@ struct GravityComponent
 struct WeightComponent
 {
 	int weight;
-	
+
 	WeightComponent() = default;
 
 	WeightComponent(int weight)
 		: weight(weight)
 	{
 	}
-
 };
 
 // Global for now
@@ -114,7 +163,12 @@ public:
 class RigidBodySystem : public System
 {
 public:
-	RigidBodySystem() = default;
+	//RigidBodySystem() = default;
+
+	RigidBodySystem(const string& msg)
+	{
+		cout << "RigidBodySystem constructed with msg: " << msg << "\n";
+	}
 
 	void Update()
 	{
@@ -130,7 +184,7 @@ public:
 int main()
 {
 	cout << "ECS Test:\n";
-	cout << "-------------------------------------------------------------------------\n\n";
+	cout << "-------------------------------------------------------------------------\n";
 
 	// Init the ECS.
 	ecs.Init();
@@ -142,7 +196,7 @@ int main()
 	
 	// Create system and set its signature.
 	auto gravitySystem = ecs.RegisterSystem<GravitySystem>();
-	auto rigidBodySystem = ecs.RegisterSystem<RigidBodySystem>();
+	auto rigidBodySystem = ecs.RegisterSystem<RigidBodySystem>("Message");
 
 	Signature gravitySystemSignature;
 	gravitySystemSignature.set(ecs.GetComponentType<RigidBodyComponent>(), true);
@@ -154,33 +208,44 @@ int main()
 	ecs.SetSystemSignature<RigidBodySystem>(rigidBodySystemSignature);
 
 	// Create entities for testing.
-	vector<Entity> entities(30);
+	int numEntities = 30;
+	vector<Entity> entities(numEntities);
 
 	// First 10 entities are gonna have both RigidBody and Gravity components.
-	for (int i = 0; i < 10; i++)
+
 	{
-		entities[i] = ecs.CreateEntity();
-		ecs.AddComponent(entities[i], RigidBodyComponent(Vec2(100, 100)));
-		ecs.AddComponent(entities[i], GravityComponent(Vec2(0, 1)));
+		PROFILE_SCOPE("Entity Creation");
+
+		for (int i = 0; i < 10; i++)
+		{
+			entities[i] = ecs.CreateEntity();
+			ecs.AddComponent(entities[i], RigidBodyComponent(Vec2(100, 100)));
+			ecs.AddComponent(entities[i], GravityComponent(Vec2(0, 1)));
+		}
+
+		// Next 10 will only have RigidBody component.
+		for (int i = 10; i < 20; i++)
+		{
+			entities[i] = ecs.CreateEntity();
+			ecs.AddComponent(entities[i], RigidBodyComponent(Vec2(100, 100)));
+		}
+
+		// Next 10 will only have both RigidBody and Gravity components as well as WeightComponent.
+		for (int i = 20; i < numEntities; i++)
+		{
+			entities[i] = ecs.CreateEntity();
+			ecs.AddComponent(entities[i], RigidBodyComponent(Vec2(100, 100)));
+			ecs.AddComponent(entities[i], GravityComponent(Vec2(0, 1)));
+			ecs.AddComponent(entities[i], WeightComponent(10));
+		}
+
 	}
 
-	// Next 10 will only have RigidBody component.
-	for (int i = 10; i < 20; i++)
 	{
-		entities[i] = ecs.CreateEntity();
-		ecs.AddComponent(entities[i], RigidBodyComponent(Vec2(100, 100)));
-	}
+		PROFILE_SCOPE("Update");
 
-	// Next 10 will only have both RigidBody and Gravity components as well as WeightComponent.
-	for (int i = 20; i < 30; i++)
-	{
-		entities[i] = ecs.CreateEntity();
-		ecs.AddComponent(entities[i], RigidBodyComponent(Vec2(100, 100)));
-		ecs.AddComponent(entities[i], GravityComponent(Vec2(0, 1)));
-		ecs.AddComponent(entities[i], WeightComponent(10));
+		gravitySystem->Update();
+		cout << "-------------------------------------------------------------------------\n";
+		rigidBodySystem->Update();
 	}
-
-	gravitySystem->Update();
-	cout << "-------------------------------------------------------------------------\n";
-	rigidBodySystem->Update();
 }

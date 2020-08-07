@@ -10,15 +10,15 @@
 class SystemManager
 {
 public:
-	template<typename T>
-	std::shared_ptr<T> RegisterSystem() // TODO: take constructor arguments
+	template<typename T, typename... Args>
+	std::shared_ptr<T> RegisterSystem(Args&&... params)
 	{
 		const char* typeName = typeid(T).name();
 
 		assert(m_Systems.find(typeName) == m_Systems.end() && "Registering system more than once.");
 
 		// Create a pointer to the system and return it so it can be used externally.
-		auto system = std::make_shared<T>();
+		auto system = std::make_shared<T>(std::forward<Args>(params)...);
 		m_Systems.insert({ typeName, system });
 
 		return system;

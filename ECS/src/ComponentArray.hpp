@@ -17,7 +17,7 @@ template<typename T>
 class ComponentArray : public IComponentArray
 {
 public:
-	void InsertData(Entity entity, T component)
+	void InsertData(Entity entity, const T& component)
 	{
 		assert(m_EntityToIndexMap.find(entity) == m_EntityToIndexMap.end() && "Component added to same entity more than once.");
 
@@ -31,6 +31,22 @@ public:
 		m_Size++;
 	}
 
+	#if 0
+void InsertData(Entity entity, T&& component)
+	{
+		assert(m_EntityToIndexMap.find(entity) == m_EntityToIndexMap.end() && "Component added to same entity more than once.");
+
+		// Put the new entry at the end and update the maps.
+		size_t newIndex = m_Size;
+		m_ComponentArray[newIndex] = std::move(component);
+
+		m_EntityToIndexMap[entity] = newIndex;
+		m_IndexToEntityMap[newIndex] = entity;
+
+		m_Size++;
+	}
+#endif
+
 	void RemoveData(Entity entity)
 	{
 		assert(m_EntityToIndexMap.find(entity) != m_EntityToIndexMap.end() && "Removing non-existent component.");
@@ -39,7 +55,7 @@ public:
 		size_t indexOfRemovedEntity = m_EntityToIndexMap[entity];
 		size_t indexOfLastElement = m_Size - 1;
 
-		m_ComponentArray[indexOfRemovedEntity] = m_ComponentArray[indexOfLastElement]; // TODO: Move maybe.
+		m_ComponentArray[indexOfRemovedEntity] = m_ComponentArray[indexOfLastElement];
 
 		// Update map to point to moved spot.
 		Entity entityOfLastElement = m_IndexToEntityMap[indexOfLastElement];

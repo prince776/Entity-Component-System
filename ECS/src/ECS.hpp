@@ -10,7 +10,7 @@
 class ECS
 {
 public:
-	void Init() // TODO: change to constructor.
+	void Init() // Maybe: change to constructor.
 	{
 		m_EntityManager = std::make_unique<EntityManager>();
 		m_ComponentManager = std::make_unique<ComponentManager>();
@@ -38,9 +38,9 @@ public:
 	}
 
 	template<typename T>
-	void AddComponent(Entity entity, T component) // TODO: Perfect Forwarding.
+	void AddComponent(Entity entity, T&& component)
 	{
-		m_ComponentManager->AddComponent<T>(entity, component);
+		m_ComponentManager->AddComponent<T>(entity, std::forward<T>(component));
 
 		auto signature = m_EntityManager->GetSignature(entity);
 		signature.set(m_ComponentManager->GetComponentType<T>(), true);
@@ -74,10 +74,10 @@ public:
 	}
 
 	// System methods.
-	template<typename T>
-	std::shared_ptr<T> RegisterSystem()
+	template<typename T, typename... Args>
+	std::shared_ptr<T> RegisterSystem(Args&&... params)
 	{
-		return m_SystemManager->RegisterSystem<T>();
+		return m_SystemManager->RegisterSystem<T>(std::forward<Args>(params)...);
 	}
 
 	template<typename T>
