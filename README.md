@@ -42,5 +42,13 @@ Example.cpp explains how to use the ECS.
 
 I've also added UnitTests.
 
+## Example prestented
+It is present in project ExampleApp. It demonstrate how using ECS we can have essentially same entities but with different componenets.
+
+Here boxes are rigidbodies but they can be given gravity component separately.
+
+![ExampleApp](/ECS_demo.png)
+
+
 ### References:
 https://austinmorlan.com/posts/entity_component_system/
