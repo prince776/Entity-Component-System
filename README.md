@@ -40,4 +40,4 @@ It's a header only library, so no linking is required. To use it we just need to
 
 Example.cpp explains how to use the ECS.
 
-I've also added UnitTests if that's better to understand the usage.
+I've also added UnitTests.
