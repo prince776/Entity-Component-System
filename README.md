@@ -41,3 +41,6 @@ It's a header only library, so no linking is required. To use it we just need to
 Example.cpp explains how to use the ECS.
 
 I've also added UnitTests.
+
+### References:
+https://austinmorlan.com/posts/entity_component_system/
