@@ -15,31 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Base.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EntityManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ComponentArray.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ComponentManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SystemManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ECS.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\System.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\Example.cpp">
+    <ClCompile Include="UnitTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

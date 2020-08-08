@@ -86,6 +86,10 @@ public:
 		m_SystemManager->SetSignature<T>(signature);
 	}
 
+	const std::unique_ptr<EntityManager>& GetEntityManager() const { return m_EntityManager; }
+	const std::unique_ptr<ComponentManager>& GetComponentManager() const { return m_ComponentManager; }
+	const std::unique_ptr<SystemManager>& GetSystemManager() const { return m_SystemManager; }
+
 private:
 	std::unique_ptr<EntityManager> m_EntityManager;
 	std::unique_ptr<ComponentManager> m_ComponentManager;

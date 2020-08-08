@@ -35,6 +35,16 @@ public:
 		m_Signatures.insert({ typeName, signature });
 	}
 
+	template<typename T>
+	Signature GetSignature()
+	{
+		const char* typeName = typeid(T).name();
+
+		assert(m_Systems.find(typeName) != m_Systems.end() && "System used before registered.");
+
+		return m_Signatures[typeName];
+	}
+
 	void EntityDestroyed(Entity entity)
 	{
 		// Erase a destroyed entity from all systems lists.
